@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learning-deployment
+  labels:
+    app: learning-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: learning-app
+  template:
+    metadata:
+      labels:
+        app: learning-app
+    spec:
+      containers:
+      - name: learning-container
+        image: nginx
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"

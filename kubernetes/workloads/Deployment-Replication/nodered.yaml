@@ -1,0 +1,75 @@
+# nodered-all.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nodered
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nodered-pvc
+  namespace: nodered
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodered
+  namespace: nodered
+  labels:
+    app: nodered
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodered
+  template:
+    metadata:
+      labels:
+        app: nodered
+    spec:
+      containers:
+      - name: nodered
+        image: nodered/node-red:latest
+        ports:
+        - containerPort: 1880
+          name: http
+        env:
+        - name: NODE_RED_ENABLE_PROJECTS
+          value: "false"
+        - name: NODE_RED_ENABLE_SAFE_MODE
+          value: "false"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      #   volumeMounts:
+      #   - name: nodered-data
+      #     mountPath: /data
+      # volumes:
+      # - name: nodered-data
+      #   persistentVolumeClaim:
+      #     claimName: nodered-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodered-service
+  namespace: nodered
+spec:
+  type: NodePort
+  selector:
+    app: nodered
+  ports:
+    - name: http
+      port: 1880
+      targetPort: 1880
+      nodePort: 31880

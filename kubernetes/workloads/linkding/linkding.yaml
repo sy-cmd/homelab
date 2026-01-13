@@ -1,0 +1,71 @@
+---
+# 1. PersistentVolumeClaim (PVC)
+# This claims persistent storage for linkding's SQLite database.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: linkding-pvc
+  namespace: logging # Assuming you want to use the 'logging' namespace
+spec:
+  accessModes:
+    - ReadWriteOnce # Can be mounted as read-write by a single node
+  resources:
+    requests:
+      storage: 1Gi # Request 1 Gigabyte of storage (adjust as needed)
+---
+# 2. Deployment
+# Manages the linkding container and ensures one replica is running.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkding
+  namespace: logging
+  labels:
+    app: linkding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkding
+  template:
+    metadata:
+      labels:
+        app: linkding
+    spec:
+      containers:
+      - name: linkding
+        image: sissbruecker/linkding:latest # Official Docker Hub image
+        ports:
+        - containerPort: 9090
+          name: http-port
+        # Configure the application settings
+        env:
+        - name: LD_DISABLE_SIGNUP
+          value: "False" # Set to "True" after initial user creation
+        - name: LD_CONTEXT_PATH
+          value: "/"
+        volumeMounts:
+        - name: linkding-storage
+          mountPath: /etc/linkding/data # Where the database file is stored
+      volumes:
+      - name: linkding-storage
+        persistentVolumeClaim:
+          claimName: linkding-pvc
+---
+# 3. Service (LoadBalancer)
+# Exposes the linkding UI externally with a LoadBalancer for easy access.
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkding-service
+  namespace: logging
+  labels:
+    app: linkding
+spec:
+  type: LoadBalancer # Change to ClusterIP or NodePort if you don't have a LoadBalancer
+  selector:
+    app: linkding
+  ports:
+    - protocol: TCP
+      port: 8080 # The port the Service exposes
+      targetPort: 9090 # The container port

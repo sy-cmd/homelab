@@ -1,0 +1,32 @@
+# test-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-test-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: longhorn-test-pod
+spec:
+  containers:
+  - name: test
+    image: nginx:alpine
+    resources:
+      requests:
+        storage: 900Mi
+        limit: 2Gi
+    volumeMounts:
+    - name: test-volume
+      mountPath: /data
+  volumes:
+  - name: test-volume
+    persistentVolumeClaim:
+      claimName: longhorn-test-pvc

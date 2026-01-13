@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nomad 
+  labels:
+    app: nomad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nomad
+  template:
+    metadata:
+      labels:
+        app: nomad
+    spec:
+      containers:
+      - name: nomad
+        image: hashicorp/nomad:latest
+        args: ["agent", "-dev", "-bind=0.0.0.0"]
+        # 2. Add this to bypass the "Running inside Docker" warning crash
+        env:
+         - name: NOMAD_SKIP_DOCKER_IMAGE_WARN
+           value: "1"
+        ports:
+        - containerPort: 4646
+        - containerPort: 4647
+        - containerPort: 4648
+        volumeMounts:
+        - name: nomad-data
+          mountPath: /nomad/data
+      volumes:
+      - name: nomad-data
+        emptyDir: {}  

@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-auth@kubernetescrd
+spec:
+  rules:
+  - host: "traefik.local"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: traefik
+            port:
+              number: 9000  # Traefik dashboard port
+---
+# Basic authentication middleware
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: auth
+  namespace: kube-system
+spec:
+  basicAuth:
+    secret: authsecret
+---
+# Create the secret with username/password
+apiVersion: v1
+kind: Secret
+metadata:
+  name: authsecret
+  namespace: kube-system
+data:
+  users: |2
+    dGVzdDokYXByMSRrM3hEcmVtciQvVDFuUjRvNHJ2aDlQam1Bd0VRLg==  # test:test

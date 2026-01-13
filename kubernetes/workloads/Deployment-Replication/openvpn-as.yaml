@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openvpn-as
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openvpn-as
+  template:
+    metadata:
+      labels:
+        app: openvpn-as
+    spec:
+      containers:
+      - name: openvpn-as
+        image: openvpn/openvpn-as:latest
+        ports:
+        - containerPort: 943
+          name: web-http
+        - containerPort: 9443
+          name: web-https
+        - containerPort: 1194
+          name: vpn-udp
+          protocol: UDP
+        env:
+        - name: PUID
+          value: "999"  # User ID for files
+        - name: PGID
+          value: "999"  # Group ID
+        - name: TZ
+          value: "Etc/UTC"  # Timezone
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/openvpn-as
+      volumes:
+      - name: config
+        emptyDir: {}  # Basic volume; use PVC for persistence
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openvpn-as
+spec:
+  type: NodePort
+  ports:
+  - port: 943
+    targetPort: 943
+    nodePort: 30094
+    name: web-http
+  - port: 9443
+    targetPort: 9443
+    nodePort: 30443
+    name: web-https
+  - port: 1194
+    targetPort: 1194
+    protocol: UDP
+    nodePort: 31194
+    name: vpn-udp
+  selector:
+    app: openvpn-as

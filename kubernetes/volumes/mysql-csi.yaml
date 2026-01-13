@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysq-metadata  
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysq-csi
+  annotations:
+    description: " its getting password and username from mysql-secret"
+    checkout: "true"
+spec:
+  containers:
+    - name: mysql
+      image: mysql:8.0.44-debian
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: username
+      volumeMounts:
+        - name: mysq-metadata
+          mountPath: /metadata
+  volumes:
+    - name: mysq-metadata
+      persistentVolumeClaim:
+        claimName: mysq-metadata

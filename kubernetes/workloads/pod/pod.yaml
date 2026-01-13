@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+  labels: 
+    name: myapp-pod
+spec:
+  containers:
+    - name: myapp-container
+      image: busybox1.28
+      command: ['sh' ,'-c' ,'echo the app is running %% sleep 3600' ]
+      env:
+        - name: APP_ENV
+          value: production
+  initContainers:
+        - name: init-myservice
+          image: busybox1.28
+          command: ['sh', '-c']
+          args: ['until nslookup myservice; do echo waiting for myservice; sleep 2; done;']
