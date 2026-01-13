@@ -1,0 +1,41 @@
+job "system-upgrade" {
+  datacenters = ["dc1"]
+  type = "batch"
+  
+  # Constrain to only run on these specific nodes
+  constraint {
+    attribute = "${node.unique.name}"
+    operator = "regexp"
+    value    = "rp11|16|17"
+  }
+
+  parameterized {
+    payload       = "required"
+    meta_required = ["target_host"]
+  }
+
+  group "upgrade" {
+    task "upgrade" {
+      driver = "raw_exec"
+      
+      config {
+        command = "/bin/bash"
+        args = ["-c", <<EOF
+          ssh ${NOMAD_META_TARGET_HOST} \
+          "sudo apt update && \
+           sudo apt upgrade -y && \
+           sudo apt dist-upgrade -y && \
+           sudo apt full-upgrade -y && \
+           sudo apt autoremove -y && \
+           sudo apt autoclean && \
+           if [ -f /var/run/reboot-required ]; then sudo reboot; fi"
+        EOF
+        ]
+      }
+
+      env {
+        NOMAD_META_TARGET_HOST = "${NOMAD_META_TARGET_HOST}"
+      }
+    }
+  }
+}
