@@ -11,6 +11,7 @@ This homelab demonstrates enterprise-grade DevOps practices including:
 - **CI/CD Pipeline**: Gitea Runner with Vault integration
 - **Infrastructure as Code**: Kubernetes manifests and configurations
 
+```
 homelab/
 ├── Kubernetes/            # Learning docs and k3s implementation
 ├── Linux/                 # Documentation on Linux administration
@@ -24,7 +25,7 @@ homelab/
 ├── docs/                  # General documentation
 │   └── architecture.md    # System architecture diagrams/notes
 └── README.md              # Project overview and status
-
+```
 ## 🛠️ Components
 
 ### 1. k3s Kubernetes Cluster
