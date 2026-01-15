@@ -12,19 +12,18 @@ This homelab demonstrates enterprise-grade DevOps practices including:
 - **Infrastructure as Code**: Kubernetes manifests and configurations
 
 homelab/
-|--- Kubernetes/                       # Learning doc of k3s 
-├── README.md                          # This file 
-├── docs/                              # Documentation
-│   ├── architecture.md                # System architecture
-├── manifests/                         # Kubernetes manifests
-│   ├── gitea/                         # Gitea deployment
-│   ├── vault/                         # Vault configuration
-│   ├── gitea-runner/                  # gitea Runner setup
-├── nomad/                             # docs on nomad  
-|── vault/                             # docs on vault 
-|── Terrafrom/                         # docs on terrafrom 
-|── Linux/                             # docs on linux 
-
+├── Kubernetes/            # Learning docs and k3s implementation
+├── Linux/                 # Documentation on Linux administration
+├── Terraform/             # IaC scripts and documentation
+├── nomad/                 # Docs and configuration for Nomad orchestration
+├── vault/                 # Security docs and Vault secret management
+├── manifests/             # Kubernetes YAML manifests
+│   ├── gitea/             # Gitea (Git Service) deployment
+│   ├── gitea-runner/      # CI/CD Runner setup
+│   └── vault/             # Vault-on-K8s configuration
+├── docs/                  # General documentation
+│   └── architecture.md    # System architecture diagrams/notes
+└── README.md              # Project overview and status
 
 ## 🛠️ Components
 
@@ -98,9 +97,7 @@ This homelab provides hands-on experience with:
 ## 📚 Documentation
 
 - [System Architecture](docs/architecture.md) - Complete architectural overview
-- [Gitea Setup](docs/gitea-setup.md) - Gitea configuration and workflows
-- [Vault Integration](docs/vault-integration.md) - Vault setup and policies
-- [CI/CD Pipelines](docs/ci-cd-pipelines.md) - Pipeline examples and best practices
+
 
 
 **Note**: This homelab is designed for educational purposes and learning DevOps practices. This is a sample of my learning environment .
