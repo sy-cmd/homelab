@@ -1,0 +1,73 @@
+# registry-fixed.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: registry-pvc
+  namespace: registry
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-registry
+  namespace: registry
+  labels:
+    app: docker-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-registry
+  template:
+    metadata:
+      labels:
+        app: docker-registry
+    spec:
+      containers:
+      - name: registry
+        image: registry:2.8.2  
+        ports:
+        - containerPort: 5000
+        env:
+        
+        - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+          value: /var/lib/registry
+        - name: REGISTRY_HTTP_ADDR
+          value: ":5000"
+        - name: REGISTRY_HTTP_READTIMEOUT
+          value: "300s"  
+        - name: REGISTRY_HTTP_WRITETIMEOUT
+          value: "300s"  
+        - name: REGISTRY_STORAGE_DELETE_ENABLED
+          value: "true"  # Allow blob cleanup
+        - name: REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR
+          value: "inmemory" 
+        - name: REGISTRY_HTTP_HEADERS
+          value: 'X-Content-Type-Options: [nosniff]'
+        volumeMounts:
+        - name: registry-storage
+          mountPath: /var/lib/registry
+      volumes:
+      - name: registry-storage
+        persistentVolumeClaim:
+          claimName: registry-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+  namespace: registry
+spec:
+  selector:
+    app: docker-registry
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: ClusterIP
