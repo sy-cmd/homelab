@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-carl
+  namespace: chess 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-carl
+  template:
+    metadata:
+      labels:
+        app: chat-carl
+    spec:
+      containers:
+        - name: chat-carl
+          image: syfalanga/chess:v2
+          ports:
+            - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-carl-service
+  namespace: chess
+spec:
+  selector:
+    app: chat-carl
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: ClusterIP
