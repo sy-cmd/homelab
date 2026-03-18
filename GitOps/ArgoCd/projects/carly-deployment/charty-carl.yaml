@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: chat-carl
-          image: syfalanga/chess:v1
+          image:  syfalanga/chess-app:latest #syfalanga/chess:v1
           ports:
             - containerPort: 5000
 
