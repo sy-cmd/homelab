@@ -1,26 +1,4 @@
-# Dependencies
-node_modules/
-
-# Environment variables (contains sensitive API keys)
 .env
-.env.local
-.env.*.local
-
-# Logs
-npm-debug.log*
-server.log
+node_modules/
+.env
 *.log
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Build outputs
-dist/
-build/
