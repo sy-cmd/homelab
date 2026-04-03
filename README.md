@@ -39,12 +39,15 @@ homelab/
 - Web UI and API access
 - User management and permissions
 - CI/CD integration via webhooks
+![alt text](image-1.png)
 
 ### 3. HashiCorp Vault - Secrets Management
 - Centralized secrets storage
 - Kubernetes authentication method
 - Dynamic secret generation
 - Audit logging and monitoring
+![alt text](image.png)
+
 
 ### 4. Gitea Runner - CI/CD Execution
 - Kubernetes-based runner
@@ -63,6 +66,7 @@ graph LR
     E --> F[Build/Test]
     F --> G[Deploy]
 ```
+![alt text](image-2.png)
 
 ## 📊 Key Features
 
